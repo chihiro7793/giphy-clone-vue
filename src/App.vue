@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-12">
         <app-header></app-header>
-        <router-view :bookmarks="bookmarks"></router-view>
+        <router-view></router-view>
       </div>
     </div>
   </div>
@@ -12,11 +12,6 @@
 <script>
 import Header from './components/Header.vue'
 export default {
-  data() {
-    return {
-      bookmarks: []
-    }
-  },
   components: {
     appHeader: Header
   }

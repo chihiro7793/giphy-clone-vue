@@ -1,9 +1,9 @@
 <template>
   <div class="list">
     <gif-item
-      @bookmark-item="onBookmarkGif"
       v-for="gif in giflist"
       :gif="gif"
+      :giflist="giflist"
       :key="gif.id"
     ></gif-item>
   </div>
@@ -15,11 +15,6 @@ export default {
   props: ['giflist'],
   components: {
     GifItem
-  },
-  methods: {
-    onBookmarkGif(id) {
-      this.$emit('onbookmark', id)
-    }
   }
 }
 </script>

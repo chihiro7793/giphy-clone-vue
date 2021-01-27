@@ -7,23 +7,29 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-        <search-input @gifs-fetched="onGifsSearch"></search-input>
+        <search-input></search-input>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12">
-        <gif-list @onbookmark="onbookmark" :giflist="slicedGifs"></gif-list>
+        <gif-list :giflist="$store.state.slicedGifs"></gif-list>
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-8">
         <div class="pagination">
-          <button :disabled="currentPage === 0" @click="goToPreviousPage">
+          <button
+            :disabled="$store.state.currentPage === 0"
+            @click="goToPreviousPage"
+          >
             Previous
           </button>
           <button
-            :disabled="currentPage === Math.floor(gifs.length / 9)"
+            :disabled="
+              $store.state.currentPage ===
+                Math.floor($store.state.gifs.length / 9)
+            "
             @click="goToNextPage"
           >
             Next
@@ -37,46 +43,30 @@
 <script>
 import SearchInput from './SearchInput.vue'
 import GifList from './GifList.vue'
+import { sliceArray } from '../functions/SliceArray'
 
 export default {
   name: 'App',
-  props: ['bookmarks'],
   components: {
     SearchInput,
     GifList
   },
-  data() {
-    return {
-      currentPage: 0,
-      gifs: [],
-      slicedGifs: []
-    }
-  },
   methods: {
-    onGifsSearch(result) {
-      this.gifs = result.data
-      console.log(this.gifs.length)
-      this.slicedGifs = this.gifs.slice(
-        this.currentPage * 9,
-        this.currentPage * 9 + 9
-      )
-    },
     goToNextPage() {
-      this.currentPage += 1
-      this.slicedGifs = this.gifs.slice(
-        this.currentPage * 9,
-        this.currentPage * 9 + 9
+      this.$store.state.currentPage += 1
+      this.$store.state.slicedGifs = sliceArray(
+        this.$store.state.gifs,
+        this.$store.state.currentPage,
+        9
       )
     },
     goToPreviousPage() {
-      this.currentPage -= 1
-      this.slicedGifs = this.gifs.slice(
-        this.currentPage * 9,
-        this.currentPage * 9 + 9
+      this.$store.state.currentPage -= 1
+      this.$store.state.slicedGifs = sliceArray(
+        this.$store.state.gifs,
+        this.$store.state.currentPage,
+        9
       )
-    },
-    onbookmark(gif) {
-      this.bookmarks.push(gif)
     }
   },
   mounted() {
@@ -85,11 +75,15 @@ export default {
     )
       .then(response => response.json())
       .then(result => {
-        this.gifs = result.data
-        console.log(this.gifs)
-        this.slicedGifs = this.gifs.slice(
-          this.currentPage * 9,
-          this.currentPage * 9 + 9
+        result.data.forEach(element => {
+          element.isbookmarked = false
+        })
+        this.$store.state.trending = result.data
+        this.$store.state.gifs = this.$store.state.trending
+        this.$store.state.slicedGifs = sliceArray(
+          this.$store.state.gifs,
+          this.$store.state.currentPage,
+          9
         )
       })
   }

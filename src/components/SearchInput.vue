@@ -1,26 +1,49 @@
 <template>
   <input
     placeholder="Type and search for gifs"
-    v-model="search"
+    v-model="keyword"
     @input="onSearch"
   />
 </template>
 
 <script>
+import { sliceArray } from '../functions/SliceArray'
 export default {
   data() {
     return {
-      search: ''
+      keyword: '',
+      timeout: null
     }
   },
   methods: {
     onSearch() {
+      if (this.keyword !== '') {
+        this.timeout = setTimeout(() => {
+          this.makeAsearchCall()
+        }, 700)
+      } else {
+        this.$store.state.slicedGifs = sliceArray(
+          this.$store.state.trending,
+          this.$store.state.currentPage,
+          9
+        )
+      }
+    },
+    makeAsearchCall() {
       fetch(
-        `https://api.giphy.com/v1/gifs/search?api_key=n7aovHfAyMyXnG3TPpBqIMHENiRFXuFd&q=${this.search}&limit=`
+        `https://api.giphy.com/v1/gifs/search?api_key=n7aovHfAyMyXnG3TPpBqIMHENiRFXuFd&q=${this.keyword}&limit=`
       )
         .then(response => response.json())
         .then(result => {
-          this.$emit('gifs-fetched', result)
+          result.data.forEach(element => {
+            element.isbookmarked = false
+          })
+          this.$store.state.gifs = result.data
+          this.$store.state.slicedGifs = sliceArray(
+            this.$store.state.gifs,
+            this.$store.state.currentPage,
+            9
+          )
         })
     }
   }
@@ -36,6 +59,7 @@ input {
   outline: 0;
   display: block;
   width: 100%;
+  color: darkgray;
 }
 
 input:focus {

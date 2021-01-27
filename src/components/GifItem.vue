@@ -4,34 +4,44 @@
     :style="`background-image: url('${gif.images.fixed_width.url}')`"
   >
     <font-awesome-icon
-      v-show="isbookmarked"
+      v-show="this.gif.isbookmarked"
       icon="bookmark"
       class="bookmark"
-      @click="bookmarkGifItem"
+      @click="bookmarkThisGif"
     />
     <font-awesome-icon
-      v-show="!isbookmarked"
+      v-show="!this.gif.isbookmarked"
       :icon="['far', 'bookmark']"
       class="bookmark"
-      @click="bookmarkGifItem"
+      @click="bookmarkThisGif"
     />
   </div>
 </template>
 
 <script>
 export default {
-  props: ['gif'],
+  props: ['gif', 'giflist'],
   data() {
     return {
-      url: '',
-      isbookmarked: false
+      url: ''
     }
   },
   methods: {
-    bookmarkGifItem() {
-      console.log(this.gif)
-      this.isbookmarked = !this.isbookmarked
-      this.$emit('bookmark-item', this.gif)
+    bookmarkThisGif() {
+      let index = this.giflist.findIndex(element => element.id === this.gif.id)
+      if (index !== -1) {
+        this.giflist[index].isbookmarked = !this.giflist[index].isbookmarked
+      }
+      if (this.giflist[index].isbookmarked) {
+        this.$store.state.bookmarks.push(this.gif)
+      } else {
+        let index = this.$store.state.bookmarks.findIndex(
+          element => element.id === this.gif.id
+        )
+        if (index !== -1) {
+          this.$store.state.bookmarks.splice(index, 1)
+        }
+      }
     }
   }
 }
