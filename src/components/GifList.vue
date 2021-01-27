@@ -5,6 +5,7 @@
       :gif="gif"
       :giflist="giflist"
       :key="gif.id"
+      @gifs-fetched="onbookmark"
     ></gif-item>
   </div>
 </template>
@@ -15,6 +16,24 @@ export default {
   props: ['giflist'],
   components: {
     GifItem
+  },
+  methods: {
+    onbookmark(gif) {
+      let index = this.giflist.findIndex(element => element.id === gif.id)
+      if (index !== -1) {
+        this.giflist[index].isbookmarked = !this.giflist[index].isbookmarked
+      }
+      if (this.giflist[index].isbookmarked) {
+        this.$store.state.bookmarks.push(gif)
+      } else {
+        let index = this.$store.state.bookmarks.findIndex(
+          element => element.id === gif.id
+        )
+        if (index !== -1) {
+          this.$store.state.bookmarks.splice(index, 1)
+        }
+      }
+    }
   }
 }
 </script>

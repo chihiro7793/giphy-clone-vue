@@ -19,19 +19,10 @@
     <div class="row">
       <div class="col-md-8">
         <div class="pagination">
-          <button
-            :disabled="$store.state.currentPage === 0"
-            @click="goToPreviousPage"
-          >
+          <button :disabled="disablePrevBtn" @click="goToPreviousPage">
             Previous
           </button>
-          <button
-            :disabled="
-              $store.state.currentPage ===
-                Math.floor($store.state.gifs.length / 9)
-            "
-            @click="goToNextPage"
-          >
+          <button :disabled="disableNextBtn" @click="goToNextPage">
             Next
           </button>
         </div>
@@ -41,9 +32,10 @@
 </template>
 
 <script>
+import { sliceArray } from '../functions/SliceArray'
+import { BASE_URL, API_KEY } from '../config'
 import SearchInput from './SearchInput.vue'
 import GifList from './GifList.vue'
-import { sliceArray } from '../functions/SliceArray'
 
 export default {
   name: 'App',
@@ -70,9 +62,7 @@ export default {
     }
   },
   mounted() {
-    fetch(
-      `https://api.giphy.com/v1/gifs/trending?api_key=n7aovHfAyMyXnG3TPpBqIMHENiRFXuFd&limit=&rating=r`
-    )
+    fetch(`${BASE_URL}/trending?api_key=${API_KEY}&limit=&rating=r`)
       .then(response => response.json())
       .then(result => {
         result.data.forEach(element => {
@@ -86,6 +76,17 @@ export default {
           9
         )
       })
+  },
+  computed: {
+    disablePrevBtn() {
+      return this.$store.state.currentPage === 0
+    },
+    disableNextBtn() {
+      return (
+        this.$store.state.currentPage ===
+        Math.floor(this.$store.state.gifs.length / 9)
+      )
+    }
   }
 }
 </script>

@@ -3,7 +3,9 @@
     <div class="row">
       <div class="col-md-12">
         <app-header></app-header>
-        <router-view></router-view>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
       </div>
     </div>
   </div>

@@ -8,6 +8,7 @@
 
 <script>
 import { sliceArray } from '../functions/SliceArray'
+import { BASE_URL, API_KEY } from '../config'
 export default {
   data() {
     return {
@@ -18,6 +19,7 @@ export default {
   methods: {
     onSearch() {
       if (this.keyword !== '') {
+        clearTimeout(this.timeout)
         this.timeout = setTimeout(() => {
           this.makeAsearchCall()
         }, 700)
@@ -30,9 +32,7 @@ export default {
       }
     },
     makeAsearchCall() {
-      fetch(
-        `https://api.giphy.com/v1/gifs/search?api_key=n7aovHfAyMyXnG3TPpBqIMHENiRFXuFd&q=${this.keyword}&limit=`
-      )
+      fetch(`${BASE_URL}/search?api_key=${API_KEY}&q=${this.keyword}&limit=`)
         .then(response => response.json())
         .then(result => {
           result.data.forEach(element => {
